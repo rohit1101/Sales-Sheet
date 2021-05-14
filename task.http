@@ -1,0 +1,11 @@
+http://127.0.0.1:3000?code=js&id=rohit
+
+###
+
+POST http://127.0.0.1:3000/postdata HTTP/1.1
+content-type: application/json
+
+{
+    "name": "JSON From frontend",
+    "time": "Jan 11 1999"
+}
