@@ -1,6 +1,27 @@
 {
-  
   "dependencies": {
-    "chalk": "^4.1.0"
-  }
+    "express": "^4.17.1"
+  },
+  "name": "backend_basics",
+  "version": "1.0.0",
+  "description": "My first backend repo",
+  "main": "./src/index.js",
+  "devDependencies": {},
+  "scripts": {
+    "start": "node ./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rohit1101/node_Basics.git"
+  },
+  "keywords": [
+    "Node",
+    "express"
+  ],
+  "author": "Rohit",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rohit1101/node_Basics/issues"
+  },
+  "homepage": "https://github.com/rohit1101/node_Basics#readme"
 }
