@@ -4,6 +4,13 @@ const app = express();
 const hostname = "127.0.0.1";
 const port = 3000;
 
+const myLogger = (req, res, next) => {
+  console.log(`Logging ${req}`);
+  next();
+};
+
+app.use(myLogger);
+
 app.get("/", (req, res) => {
   console.log(
     req.url,
@@ -19,5 +26,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listening at http://127.0.0.1:${port}`);
+  console.log(`Example app listening at http://${hostname}:${port}`);
 });
