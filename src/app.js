@@ -5,7 +5,7 @@ const hostname = "127.0.0.1";
 const port = 3000;
 
 const requestTime = (req, res, next) => {
-  req.requestStartAt = new Date().getMilliseconds();
+  req.requestStartAt = new Date().getTime();
   next();
 };
 app.use(requestTime);
@@ -21,12 +21,10 @@ app.get("/", (req, res) => {
   );
   res.statusCode = 200;
   res.statusMessage = "OK express";
-  const endTime = new Date().getMilliseconds();
-  console.log(endTime, req.requestStartAt);
   res.send(`
-    <p>Request-Response time taken: ${
-      parseInt(endTime) - parseInt(req.requestStartAt)
-    } milliseconds.<p>
+    <p>${req.method} ${req.path} ${
+    new Date().getTime() - req.requestStartAt
+  } ms.<p>
   `);
 });
 
