@@ -1,4 +1,4 @@
-## GET plaintext
+### GET plaintext
 http://127.0.0.1:3000/plaintext
 
 ### GET JSON response
@@ -15,3 +15,7 @@ content-type: application/json
     "name": "JSON From frontend",
     "time": "Jan 11 1999"
 }
+
+// Express JS routes
+###
+http://127.0.0.1:3000/
