@@ -1,7 +1,13 @@
-http://127.0.0.1:3000?code=js&id=rohit
+## GET plaintext
+http://127.0.0.1:3000/plaintext
 
-###
+### GET JSON response
+http://127.0.0.1:3000/jsonresponse
 
+### GET HTML response
+http://127.0.0.1:3000/htmlres
+
+### POST request 
 POST http://127.0.0.1:3000/postdata HTTP/1.1
 content-type: application/json
 
