@@ -4,12 +4,8 @@ const app = express();
 const hostname = "127.0.0.1";
 const port = 3000;
 
-// const myLogger = (req, res, next) => {
-//   console.log(`Logging ${req.method} request with this URL: ${req.url} `);
-//   next();
-// };
 const requestTime = (req, res, next) => {
-  req.requestStartAt = new Date().toLocaleTimeString();
+  req.requestStartAt = new Date().getMilliseconds();
   next();
 };
 app.use(requestTime);
@@ -25,12 +21,13 @@ app.get("/", (req, res) => {
   );
   res.statusCode = 200;
   res.statusMessage = "OK express";
+  const endTime = new Date().getMilliseconds();
+  console.log(endTime, req.requestStartAt);
   res.send(`
-  <p>Requested initiated at ${req.requestStartAt}<p>
-  <p>Requested ended at ${new Date().toLocaleTimeString()}<p>`);
-  //   <p>Request-Response time taken: ${
-  //     new Date().getSeconds() - req.timeInSeconds
-  //   } seconds.<p>
+    <p>Request-Response time taken: ${
+      parseInt(endTime) - parseInt(req.requestStartAt)
+    } milliseconds.<p>
+  `);
 });
 
 app.listen(port, () => {
