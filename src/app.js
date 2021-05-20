@@ -10,6 +10,7 @@ const requestTime = (req, res, next) => {
   let end = new Date().getTime();
   console.log(`${req.method} ${req.path} ${end - start} ms.`);
 };
+
 app.use(requestTime);
 
 app.get("/", (req, res) => {
