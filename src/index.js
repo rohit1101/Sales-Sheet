@@ -22,6 +22,7 @@ app.get("/", (req, res) => {
     req.path,
     req.method
   );
+  res.send({ info: "Info from backend!" });
 });
 
 app.listen(port, () => {
