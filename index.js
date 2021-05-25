@@ -1,8 +1,8 @@
-import express from "express";
-
+const express = require("express");
 const app = express();
 const hostname = "127.0.0.1";
 const port = 3000;
+const { getAllSales, addNewSalesEntry } = require("./queries");
 
 const requestTime = (req, res, next) => {
   let start = new Date().getTime();
@@ -13,18 +13,18 @@ const requestTime = (req, res, next) => {
 
 app.use(requestTime);
 
-app.get("/", (req, res) => {
-  console.log(
-    req.url,
-    req.headers,
-    req.route,
-    req.params,
-    req.path,
-    req.method
-  );
-  res.send({ info: "Info from backend!" });
-});
+app.get("/users/sales", getAllSales);
+app.get("/users/:userId/sales/:salesId", addNewSalesEntry);
 
 app.listen(port, () => {
   console.log(`Example app listening at http://${hostname}:${port}`);
 });
+
+// console.log(
+//   req.url,
+//   req.headers,
+//   req.route,
+//   req.params,
+//   req.path,
+//   req.method
+// );
