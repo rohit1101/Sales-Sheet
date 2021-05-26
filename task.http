@@ -22,7 +22,4 @@ content-type: application/json
 http://127.0.0.1:3000/sales
 
 ### create a new sales entry
-http://127.0.0.1:3000/users/user-029dsdd/sales/00fdxb21e
-
-### 
-http://127.0.0.1:3000/users/sales?bla=ssd
+http://127.0.0.1:3000/sales?id=00fdxb21e&date=2021-05-20
