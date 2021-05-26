@@ -19,8 +19,10 @@ content-type: application/json
 // Express JS routes
 
 ### get all sales by all users (optional query params)
-http://127.0.0.1:3000/users/sales
+http://127.0.0.1:3000/sales
 
 ### create a new sales entry
 http://127.0.0.1:3000/users/user-029dsdd/sales/00fdxb21e
 
+### 
+http://127.0.0.1:3000/users/sales?bla=ssd

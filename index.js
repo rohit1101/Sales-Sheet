@@ -13,7 +13,7 @@ const requestTime = (req, res, next) => {
 
 app.use(requestTime);
 
-app.get("/users/sales", getAllSales);
+app.get("/sales", getAllSales);
 app.get("/users/:userId/sales/:salesId", addNewSalesEntry);
 
 app.listen(port, () => {
