@@ -2,30 +2,30 @@ const pg = require("pg");
 const { Pool, Client } = pg;
 
 const pool = new Pool({
-  user: "admin",
+  user: "MSD",
   host: "localhost",
-  database: "sales_api",
-  password: "password",
+  database: "postgres",
+  password: "",
   port: "5432",
 });
 
 exports.getAllSales = (req, res) => {
-  const { id, date } = req.query;
+  const { cardId, date } = req.query;
 
-  if (id && date) {
+  if (cardId && date) {
     return pool
-      .query(`SELECT * FROM sales_api where date(date) = $1 and user_id=$2`, [
+      .query(`SELECT * FROM sales where date(date) = $1 and cardid=$2`, [
         date,
-        id,
+        parseInt(cardId),
       ])
       .then((result) =>
         result.rows.length ? res.send(result.rows) : res.send("No data found")
       )
       .catch((e) => console.log("error", e));
   }
-  if (id) {
+  if (cardId) {
     return pool
-      .query(`SELECT * FROM sales_api where user_id = $1`, [id])
+      .query(`SELECT * FROM sales where cardid = $1`, [cardId])
       .then((result) =>
         result.rows.length ? res.send(result.rows) : res.send("No data found")
       )
@@ -33,14 +33,14 @@ exports.getAllSales = (req, res) => {
   }
   if (date) {
     return pool
-      .query(`SELECT * FROM sales_api where date(date) = $1`, [date])
+      .query(`SELECT * FROM sales where date(date) = $1`, [date])
       .then((result) =>
         result.rows.length ? res.send(result.rows) : res.send("No data found")
       )
       .catch((e) => console.log("error", e));
   } else {
     return pool
-      .query(`SELECT * FROM sales_api`)
+      .query(`SELECT * FROM sales`)
       .then((result) =>
         result.rows.length ? res.send(result.rows) : res.send("No data found")
       )
@@ -49,12 +49,12 @@ exports.getAllSales = (req, res) => {
 };
 
 exports.addSalesEntry = (req, res) => {
-  if (Object.keys(req.body).length === 5) {
-    const { saleId, userId, date, amountPaid, expense } = req.body;
+  if (Object.keys(req.body).length === 3) {
+    const { cardId, salesRepId, date, amountPaid } = req.body;
     pool
       .query(
-        "insert into sales_api(card_id,user_id,date,amount_paid,expense)values($1,$2,$3,$4,$5)",
-        [saleId, userId, date, parseFloat(amountPaid), parseFloat(expense)]
+        "insert into sales(cardid,salesrepid,amountpaid)values($1,$2,$3)",
+        [cardId, salesRepId, parseFloat(amountPaid)]
       )
       .then(() => res.json(req.body))
       .catch((e) => console.log("error", e));
