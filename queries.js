@@ -1,5 +1,7 @@
 const pg = require("pg");
-const { Pool, Client } = pg;
+const { URL, URLSearchParams } = require("url");
+
+const { Pool } = pg;
 
 const pool = new Pool({
   user: "MSD",
@@ -18,32 +20,24 @@ exports.getAllSales = (req, res) => {
         date,
         parseInt(cardId),
       ])
-      .then((result) =>
-        result.rows.length ? res.send(result.rows) : res.send("No data found")
-      )
+      .then((result) => res.send(result.rows))
       .catch((e) => console.log("error", e));
   }
   if (cardId) {
     return pool
       .query(`SELECT * FROM sales where cardid = $1`, [cardId])
-      .then((result) =>
-        result.rows.length ? res.send(result.rows) : res.send("No data found")
-      )
+      .then((result) => res.send(result.rows))
       .catch((e) => console.log("error", e));
   }
   if (date) {
     return pool
       .query(`SELECT * FROM sales where date(date) = $1`, [date])
-      .then((result) =>
-        result.rows.length ? res.send(result.rows) : res.send("No data found")
-      )
+      .then((result) => res.send(result.rows))
       .catch((e) => console.log("error", e));
   } else {
     return pool
       .query(`SELECT * FROM sales`)
-      .then((result) =>
-        result.rows.length ? res.send(result.rows) : res.send("No data found")
-      )
+      .then((result) => res.send(result.rows))
       .catch((e) => console.log("error", e));
   }
 };
