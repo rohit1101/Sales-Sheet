@@ -1,6 +1,13 @@
+const {
+  getAllSales,
+  addSalesEntry,
+  updateSalesEntry,
+  deleteSalesEntry,
+} = require("./queries");
 const express = require("express");
 const cors = require("cors");
 const app = express();
+
 app.use(
   cors({
     origin: "http://localhost:3001",
@@ -12,7 +19,6 @@ app.use(express.urlencoded({ extended: true }));
 
 const hostname = "127.0.0.1";
 const port = 3000;
-const { getAllSales, addSalesEntry } = require("./queries");
 
 const requestTime = (req, res, next) => {
   let start = new Date().getTime();
@@ -25,6 +31,8 @@ app.use(requestTime);
 
 app.get("/sales", getAllSales);
 app.post("/sale", addSalesEntry);
+app.put("/sales/:id", updateSalesEntry);
+app.delete("/sales/:id", deleteSalesEntry);
 // app.get("/users/:userId/sales/:salesId", addNewSalesEntry);
 
 app.listen(port, () => {
