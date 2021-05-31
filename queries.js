@@ -43,12 +43,22 @@ exports.getAllSales = (req, res) => {
 };
 
 exports.addSalesEntry = (req, res) => {
+  const { cardId, salesRepId, date, amount } = req.body;
+  console.log(cardId, salesRepId, date, salesRepId);
   if (Object.keys(req.body).length === 3) {
-    const { cardId, salesRepId, date, amountPaid } = req.body;
-    pool
+    return pool
       .query(
         "insert into sales(cardid,salesrepid,amountpaid)values($1,$2,$3)",
-        [cardId, salesRepId, parseFloat(amountPaid)]
+        [parseInt(cardId), salesRepId, parseFloat(amount)]
+      )
+      .then(() => res.json(req.body))
+      .catch((e) => console.log("error", e));
+  }
+  if (Object.keys(req.body).length === 4) {
+    return pool
+      .query(
+        "insert into sales(cardid,salesrepid,date,amountpaid)values($1,$2,$3,$4)",
+        [parseInt(cardId), salesRepId, date, parseFloat(amount)]
       )
       .then(() => res.json(req.body))
       .catch((e) => console.log("error", e));
