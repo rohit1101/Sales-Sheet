@@ -86,7 +86,7 @@ exports.updateSalesEntry = async (req, res) => {
       .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
       .catch((e) => console.log("Error PUT request =>", e));
   } else {
-    return res.status(200).send("ID does not exist");
+    return res.status(400).send("ID does not exist");
   }
 };
 
@@ -109,8 +109,6 @@ exports.deleteSalesEntry = async (req, res) => {
       .then(() => res.status(200).send(`Deleted an entry with id:${id}`))
       .catch((e) => console.log("Error DELETE request =>", e));
   } else {
-    return res.status(200).send("ID does not exist");
+    return res.status(400).send("ID does not exist");
   }
-  // console.log(req.params, req.body);
-  // const { id } = req.params;
 };
