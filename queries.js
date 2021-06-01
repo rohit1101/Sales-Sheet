@@ -67,21 +67,50 @@ exports.addSalesEntry = (req, res) => {
   }
 };
 
-exports.updateSalesEntry = (req, res) => {
+exports.updateSalesEntry = async (req, res) => {
   console.log(req.params, req.body);
   const { id } = req.params;
   const { card_id } = req.body;
-  return pool
-    .query("update sales set card_id=$1 where id=$2", [card_id, id])
-    .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
-    .catch((e) => console.log("Error PUT request =>", e));
+
+  if (isNaN(id)) {
+    return res.status(400).send("Invalid ID");
+  }
+
+  const doesIdExists = await pool
+    .query("SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)", [parseInt(id)])
+    .then((result) => result.rows[0].exists);
+
+  if (doesIdExists) {
+    return pool
+      .query("update sales set card_id=$1 where id=$2", [card_id, id])
+      .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
+      .catch((e) => console.log("Error PUT request =>", e));
+  } else {
+    return res.status(200).send("ID does not exist");
+  }
 };
 
-exports.deleteSalesEntry = (req, res) => {
+exports.deleteSalesEntry = async (req, res) => {
   console.log(req.params, req.body);
   const { id } = req.params;
-  return pool
-    .query("delete from sales where id=$1", [id])
-    .then(() => res.status(200).send(`Deleted an entry with id:${id}`))
-    .catch((e) => console.log("Error DELETE request =>", e));
+  const { card_id } = req.body;
+
+  if (isNaN(id)) {
+    return res.status(400).send("Invalid ID");
+  }
+
+  const doesIdExists = await pool
+    .query("SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)", [parseInt(id)])
+    .then((result) => result.rows[0].exists);
+
+  if (doesIdExists) {
+    return pool
+      .query("delete from sales where id=$1", [id])
+      .then(() => res.status(200).send(`Deleted an entry with id:${id}`))
+      .catch((e) => console.log("Error DELETE request =>", e));
+  } else {
+    return res.status(200).send("ID does not exist");
+  }
+  // console.log(req.params, req.body);
+  // const { id } = req.params;
 };

@@ -23,3 +23,13 @@ http://127.0.0.1:3000/sales
 
 ### create a new sales entry
 http://127.0.0.1:3000/sales?id=00fdxb21e&date=2021-05-20
+
+
+## put request 
+
+PUT http://127.0.0.1:3000/sale/9 HTTP/1.1
+content-type: application/json
+
+{
+    "card_id":"1"
+}
