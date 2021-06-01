@@ -93,7 +93,6 @@ exports.updateSalesEntry = async (req, res) => {
 exports.deleteSalesEntry = async (req, res) => {
   console.log(req.params, req.body);
   const { id } = req.params;
-  const { card_id } = req.body;
 
   if (isNaN(id)) {
     return res.status(400).send("Invalid ID");
@@ -105,7 +104,7 @@ exports.deleteSalesEntry = async (req, res) => {
 
   if (doesIdExists) {
     return pool
-      .query("delete from sales where id=$1", [id])
+      .query("delete from sales where id=$1", [parseInt(id)])
       .then(() => res.status(200).send(`Deleted an entry with id:${id}`))
       .catch((e) => console.log("Error DELETE request =>", e));
   } else {
