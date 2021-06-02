@@ -8,7 +8,7 @@
   "main": "./src/index.js",
   "devDependencies": {},
   "scripts": {
-    "start": "node ./src/index.js"
+    "start": "node ./practice.js"
   },
   "repository": {
     "type": "git",

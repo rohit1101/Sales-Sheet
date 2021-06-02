@@ -1,5 +1,5 @@
 ## GET plaintext
-http://127.0.0.1:3000/plaintext
+http://127.0.0.1:80/
 
 ### GET JSON response
 http://127.0.0.1:3000/jsonresponse
