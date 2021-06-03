@@ -17,8 +17,8 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const hostname = "127.0.0.1";
-const port = 3000;
+// const hostname = "127.0.0.1";
+// const port = 3000;
 
 const requestTime = (req, res, next) => {
   let start = new Date().getTime();
@@ -35,7 +35,7 @@ app.put("/sales/:id", updateSalesEntry);
 app.delete("/sales/:id", deleteSalesEntry);
 // app.get("/users/:userId/sales/:salesId", addNewSalesEntry);
 
-app.listen(port, () => {
+app.listen(80, () => {
   console.log(`Example app listening at http://${hostname}:${port}`);
 });
 
