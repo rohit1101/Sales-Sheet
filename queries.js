@@ -4,10 +4,10 @@ const { URL, URLSearchParams } = require("url");
 const { Pool } = pg;
 
 const pool = new Pool({
-  user: "MSD",
+  user: "postgres",
   host: "localhost",
   database: "postgres",
-  password: "",
+  password: "done",
   port: "5432",
 });
 
