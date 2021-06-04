@@ -8,12 +8,12 @@
   "name": "backend_basics",
   "version": "1.0.0",
   "description": "My first backend repo",
-  "main": "./src/index.js",
+  "main": "index.js",
   "devDependencies": {
     "nodemon": "^2.0.7"
   },
   "scripts": {
-    "start": "nodemon ./src/index.js"
+    "start": "nodemon ./index.js"
   },
   "repository": {
     "type": "git",
