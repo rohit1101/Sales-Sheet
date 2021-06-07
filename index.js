@@ -36,7 +36,7 @@ app.delete("/sales/:id", deleteSalesEntry);
 // app.get("/users/:userId/sales/:salesId", addNewSalesEntry);
 
 app.listen(3000, () => {
-  console.log(`server running...`);
+  console.log(`server running on http://${hostname}:${port}`);
 });
 
 // console.log(
