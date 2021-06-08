@@ -3,6 +3,7 @@ const {
   addSalesEntry,
   updateSalesEntry,
   deleteSalesEntry,
+  filterSales,
 } = require("./queries");
 const express = require("express");
 const cors = require("cors");
@@ -30,6 +31,7 @@ const requestTime = (req, res, next) => {
 app.use(requestTime);
 
 app.get("/sales", getAllSales);
+app.get("/filter", filterSales);
 app.post("/sale", addSalesEntry);
 app.put("/sales/:id", updateSalesEntry);
 app.delete("/sales/:id", deleteSalesEntry);
