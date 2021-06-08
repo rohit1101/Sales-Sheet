@@ -171,6 +171,16 @@ exports.deleteSalesEntry = async (req, res) => {
 exports.filterSales = (req, res) => {
   const { by } = req.query;
   console.log(by);
+  if (Object.keys(req.query).length > 1) {
+    const { start, end } = req.query;
+    return pool
+      .query(
+        `select card_id,date,amount_paid,description from sales where date(date) >= $1 and date(date) <$2`,
+        [start, end]
+      )
+      .then((result) => res.send(result.rows))
+      .catch((e) => console.log("ERROR while filtering:", e));
+  }
   return by === "date"
     ? pool
         .query(
