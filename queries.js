@@ -43,28 +43,22 @@ exports.getAllSales = (req, res) => {
 };
 
 exports.addSalesEntry = (req, res) => {
-  const { card_id, sales_rep_id, date, amount_paid, description } = req.body;
-  console.log(card_id, sales_rep_id, date, amount_paid, description);
-  if (Object.keys(req.body).length === 4) {
+  const { card_id, sales_rep_id, date, amount_paid } = req.body;
+  console.log(card_id, sales_rep_id, date, amount_paid);
+  if (Object.keys(req.body).length === 3) {
     return pool
       .query(
-        "insert into sales(card_id,sales_rep_id,amount_paid,description)values($1,$2,$3,$4) returning *",
-        [parseInt(card_id), sales_rep_id, parseFloat(amount_paid), description]
+        "insert into sales(card_id,sales_rep_id,amount_paid)values($1,$2,$3,$4) returning *",
+        [parseInt(card_id), sales_rep_id, parseFloat(amount_paid)]
       )
       .then((result) => res.send(result.rows[0]))
       .catch((e) => console.log("error", e));
   }
-  if (Object.keys(req.body).length === 5) {
+  if (Object.keys(req.body).length === 4) {
     return pool
       .query(
-        "insert into sales(card_id,sales_rep_id,date,amount_paid,description)values($1,$2,$3,$4,$5) returning *",
-        [
-          parseInt(card_id),
-          sales_rep_id,
-          date,
-          parseFloat(amount_paid),
-          description,
-        ]
+        "insert into sales(card_id,sales_rep_id,date,amount_paid)values($1,$2,$3,$4,$5) returning *",
+        [parseInt(card_id), sales_rep_id, date, parseFloat(amount_paid)]
       )
       .then((result) => res.send(result.rows[0]))
       .catch((e) => console.log("error", e));
@@ -192,4 +186,60 @@ exports.filterSales = (req, res) => {
         .query(`select card_id,sum(amount_paid) from sales group by card_id`)
         .then((result) => res.send(result.rows))
         .catch((e) => console.log("ERROR while filtering:", e));
+};
+
+exports.getAllExpenses = (req, res) => {
+  return pool
+    .query(`select * from expenses`)
+    .then((result) => res.send(result.rows))
+    .catch((e) => console.log("Error while querying GET expenses"));
+};
+
+exports.addExpenseEntry = (req, res) => {
+  const { sales_rep_id, date, amount_paid, description } = req.body;
+  console.log(sales_rep_id, date, amount_paid, description);
+  if (Object.keys(req.body).length === 3) {
+    return pool
+      .query(
+        "insert into sales(sales_rep_id,amount_paid,description)values($1,$2,$3) returning *",
+        [sales_rep_id, parseFloat(amount_paid), description]
+      )
+      .then((result) => res.send(result.rows[0]))
+      .catch((e) => console.log("error", e));
+  }
+  if (Object.keys(req.body).length === 4) {
+    return pool
+      .query(
+        "insert into sales(sales_rep_id,date,amount_paid,description)values($1,$2,$3,$4) returning *",
+        [sales_rep_id, date, parseFloat(amount_paid), description]
+      )
+      .then((result) => res.send(result.rows[0]))
+      .catch((e) => console.log("error", e));
+  } else {
+    res.status(400).send("Bad Request");
+  }
+};
+
+exports.updateExpenseEntry = (req, res) => {};
+
+exports.deleteExpenseEntry = async (req, res) => {
+  console.log(req.params);
+  const { id } = req.params;
+
+  if (isNaN(id)) {
+    return res.status(400).send("Invalid ID");
+  }
+
+  const doesIdExists = await pool
+    .query("SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)", [parseInt(id)])
+    .then((result) => result.rows[0].exists);
+
+  if (doesIdExists) {
+    return pool
+      .query("delete from sales where id=$1", [parseInt(id)])
+      .then(() => res.status(200).send(`Deleted an entry with id:${id}`))
+      .catch((e) => console.log("Error DELETE request =>", e));
+  } else {
+    return res.status(400).send("ID does not exist");
+  }
 };

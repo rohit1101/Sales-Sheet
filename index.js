@@ -35,6 +35,10 @@ app.get("/filter", filterSales);
 app.post("/sale", addSalesEntry);
 app.put("/sales/:id", updateSalesEntry);
 app.delete("/sales/:id", deleteSalesEntry);
+app.get("/expenses");
+app.post("/expense");
+app.put("/expenses/:id");
+app.delete("/expenses/:id");
 // app.get("/users/:userId/sales/:salesId", addNewSalesEntry);
 
 app.listen(3000, () => {
