@@ -48,7 +48,7 @@ exports.addSalesEntry = (req, res) => {
   if (Object.keys(req.body).length === 3) {
     return pool
       .query(
-        "insert into sales(card_id,sales_rep_id,amount_paid)values($1,$2,$3,$4) returning *",
+        "insert into sales(card_id,sales_rep_id,amount_paid)values($1,$2,$3) returning *",
         [parseInt(card_id), sales_rep_id, parseFloat(amount_paid)]
       )
       .then((result) => res.send(result.rows[0]))
@@ -57,7 +57,7 @@ exports.addSalesEntry = (req, res) => {
   if (Object.keys(req.body).length === 4) {
     return pool
       .query(
-        "insert into sales(card_id,sales_rep_id,date,amount_paid)values($1,$2,$3,$4,$5) returning *",
+        "insert into sales(card_id,sales_rep_id,date,amount_paid)values($1,$2,$3,$4) returning *",
         [parseInt(card_id), sales_rep_id, date, parseFloat(amount_paid)]
       )
       .then((result) => res.send(result.rows[0]))
@@ -70,7 +70,7 @@ exports.addSalesEntry = (req, res) => {
 exports.updateSalesEntry = async (req, res) => {
   console.log(req.params, req.body);
   const { id } = req.params;
-  const { date, amount_paid, description } = req.body;
+  const { date, amount_paid } = req.body;
 
   if (isNaN(id)) {
     return res.status(400).send("Invalid ID");
@@ -81,36 +81,11 @@ exports.updateSalesEntry = async (req, res) => {
     .then((result) => result.rows[0].exists);
 
   if (doesIdExists) {
-    if (amount_paid && date && description) {
+    if (amount_paid && date) {
       return pool
-        .query(
-          "update sales set amount_paid=$1, date=$2, description=$3 where id=$4",
-          [amount_paid, date, description, id]
-        )
-        .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
-        .catch((e) => console.log("Error PUT request =>", e));
-    } else if (amount_paid && date) {
-      return pool
-        .query(
-          "update sales set amount_paid=$1, date=$2,description=$3 where id=$4",
-          [amount_paid, date, description, id]
-        )
-        .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
-        .catch((e) => console.log("Error PUT request =>", e));
-    } else if (date && description) {
-      return pool
-        .query("update sales set date=$1, description=$2 where id=$3", [
-          date,
-          description,
-          id,
-        ])
-        .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
-        .catch((e) => console.log("Error PUT request =>", e));
-    } else if (amount_paid && description) {
-      return pool
-        .query("update sales set amount_paid=$1, description=$2 where id=$3", [
+        .query("update sales set amount_paid=$1, date=$2 where id=$3", [
           amount_paid,
-          description,
+          date,
           id,
         ])
         .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
@@ -122,16 +97,10 @@ exports.updateSalesEntry = async (req, res) => {
         .catch((e) => console.log("Error PUT request =>", e));
     } else if (amount_paid) {
       return pool
-        .query("update sales set amount_paid=$1,description=$2 where id=$2", [
+        .query("update sales set amount_paid=$1, where id=$2", [
           amount_paid,
-          description,
           id,
         ])
-        .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
-        .catch((e) => console.log("Error PUT request =>", e));
-    } else if (description) {
-      return pool
-        .query("update sales set description=$1 where id=$2", [description, id])
         .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
         .catch((e) => console.log("Error PUT request =>", e));
     }
