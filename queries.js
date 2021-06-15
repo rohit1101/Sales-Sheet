@@ -138,7 +138,7 @@ exports.filterSales = (req, res) => {
     const { start, end } = req.query;
     return pool
       .query(
-        `select card_id,date,amount_paid,description from sales where date(date) >= $1 and date(date) <$2`,
+        `select card_id,date,amount_paid from sales where date(date) >= $1 and date(date) <$2`,
         [start, end]
       )
       .then((result) => res.send(result.rows))
@@ -165,22 +165,22 @@ exports.getAllExpenses = (req, res) => {
 };
 
 exports.addExpenseEntry = (req, res) => {
-  const { sales_rep_id, date, amount_paid, description } = req.body;
-  console.log(sales_rep_id, date, amount_paid, description);
-  if (Object.keys(req.body).length === 3) {
+  const { sales_rep_id, date, amount_paid } = req.body;
+  console.log(sales_rep_id, date, amount_paid);
+  if (Object.keys(req.body).length === 2) {
     return pool
       .query(
-        "insert into sales(sales_rep_id,amount_paid,description)values($1,$2,$3) returning *",
-        [sales_rep_id, parseFloat(amount_paid), description]
+        "insert into expenses(sales_rep_id,amount_paid)values($1,$2) returning *",
+        [sales_rep_id, parseFloat(amount_paid)]
       )
       .then((result) => res.send(result.rows[0]))
       .catch((e) => console.log("error", e));
   }
-  if (Object.keys(req.body).length === 4) {
+  if (Object.keys(req.body).length === 3) {
     return pool
       .query(
-        "insert into sales(sales_rep_id,date,amount_paid,description)values($1,$2,$3,$4) returning *",
-        [sales_rep_id, date, parseFloat(amount_paid), description]
+        "insert into expenses(sales_rep_id,date,amount_paid)values($1,$2,$3) returning *",
+        [sales_rep_id, date, parseFloat(amount_paid)]
       )
       .then((result) => res.send(result.rows[0]))
       .catch((e) => console.log("error", e));
@@ -200,12 +200,14 @@ exports.deleteExpenseEntry = async (req, res) => {
   }
 
   const doesIdExists = await pool
-    .query("SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)", [parseInt(id)])
+    .query("SELECT EXISTS(SELECT 1 FROM expenses WHERE id = $1)", [
+      parseInt(id),
+    ])
     .then((result) => result.rows[0].exists);
 
   if (doesIdExists) {
     return pool
-      .query("delete from sales where id=$1", [parseInt(id)])
+      .query("delete from expenses where id=$1", [parseInt(id)])
       .then(() => res.status(200).send(`Deleted an entry with id:${id}`))
       .catch((e) => console.log("Error DELETE request =>", e));
   } else {
