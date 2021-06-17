@@ -4,6 +4,10 @@ const {
   updateSalesEntry,
   deleteSalesEntry,
   filterSales,
+  getAllExpenses,
+  addExpenseEntry,
+  updateExpenseEntry,
+  deleteExpenseEntry,
 } = require("./queries");
 const express = require("express");
 const cors = require("cors");
@@ -35,10 +39,10 @@ app.get("/filter", filterSales);
 app.post("/sale", addSalesEntry);
 app.put("/sales/:id", updateSalesEntry);
 app.delete("/sales/:id", deleteSalesEntry);
-app.get("/expenses");
-app.post("/expense");
-app.put("/expenses/:id");
-app.delete("/expenses/:id");
+app.get("/expenses", getAllExpenses);
+app.post("/expense", addExpenseEntry);
+app.put("/expenses/:id", updateExpenseEntry);
+app.delete("/expenses/:id", deleteExpenseEntry);
 // app.get("/users/:userId/sales/:salesId", addNewSalesEntry);
 
 app.listen(3000, () => {
