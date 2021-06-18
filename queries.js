@@ -69,40 +69,33 @@ exports.addSalesEntry = (req, res) => {
 
 exports.updateSalesEntry = async (req, res) => {
   const { id } = req.params;
-  const { date, amount_paid } = req.body;
+  const { date, amount_paid, card_id } = req.body;
+  let dbArgs = [];
+  amount_paid && dbArgs.push(parseFloat(amount_paid));
+  date && dbArgs.push(date);
+  card_id && dbArgs.push(parseInt(card_id));
 
-  // if (isNaN(id)) {
-  //   return res.status(400).send("Invalid ID");
-  // }
+  let query = `update sales set 
+  ${amount_paid ? "amount_paid = $1" : ""}
+  ${date ? "date = $2" : ""}
+  ${card_id ? "card_id = $3" : ""}
+  where id=${id};`.trim();
+
+  console.log(query, dbArgs);
+
+  if (isNaN(id)) {
+    return res.status(400).send("Invalid ID");
+  }
 
   // const doesIdExists = await pool
   //   .query("SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)", [parseInt(id)])
   //   .then((result) => result.rows[0].exists);
 
   // if (doesIdExists) {
-  //   if (amount_paid && date) {
-  //     return pool
-  //       .query("update sales set amount_paid=$1, date=$2 where id=$3", [
-  //         amount_paid,
-  //         date,
-  //         id,
-  //       ])
-  //       .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
-  //       .catch((e) => console.log("Error PUT request =>", e));
-  //   } else if (date) {
-  //     return pool
-  //       .query("update sales set date=$1 where id=$2", [date, id])
-  //       .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
-  //       .catch((e) => console.log("Error PUT request =>", e));
-  //   } else if (amount_paid) {
-  //     return pool
-  //       .query("update sales set amount_paid=$1, where id=$2", [
-  //         amount_paid,
-  //         id,
-  //       ])
-  //       .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
-  //       .catch((e) => console.log("Error PUT request =>", e));
-  //   }
+  //   return pool
+  //     .query(query, dbArgs)
+  //     .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
+  //     .catch((e) => console.log("Error PUT request =>", e));
   // } else {
   //   return res.status(400).send("ID does not exist");
   // }
@@ -189,46 +182,35 @@ exports.addExpenseEntry = (req, res) => {
 };
 
 exports.updateExpenseEntry = async (req, res) => {
-  console.log(req.params, req.body);
   const { id } = req.params;
+  const { date, amount_paid, description } = req.body;
+  let dbArgs = [];
+  amount_paid && dbArgs.push(parseFloat(amount_paid));
+  date && dbArgs.push(date);
+  description && dbArgs.push(description);
 
-  // if (isNaN(id)) {
-  //   return res.status(400).send("Invalid ID");
-  // }
+  let query = `update expenses set 
+  ${amount_paid ? " amount_paid = $1 " : ""}
+  ${date ? " date = $2 " : ""}
+  ${description ? " description = $3 " : ""}
+  where id=${id}`.trim();
 
-  // const doesIdExists = await pool
-  //   .query("SELECT EXISTS(SELECT 1 FROM expenses WHERE id = $1)", [
-  //     parseInt(id),
-  //   ])
-  //   .then((result) => result.rows[0].exists);
+  if (isNaN(id)) {
+    return res.status(400).send("Invalid ID");
+  }
 
-  // if (doesIdExists) {
-  //   if (amount_paid && date) {
-  //     return pool
-  //       .query("update sales set amount_paid=$1, date=$2 where id=$3", [
-  //         amount_paid,
-  //         date,
-  //         id,
-  //       ])
-  //       .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
-  //       .catch((e) => console.log("Error PUT request =>", e));
-  //   } else if (date) {
-  //     return pool
-  //       .query("update sales set date=$1 where id=$2", [date, id])
-  //       .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
-  //       .catch((e) => console.log("Error PUT request =>", e));
-  //   } else if (amount_paid) {
-  //     return pool
-  //       .query("update sales set amount_paid=$1, where id=$2", [
-  //         amount_paid,
-  //         id,
-  //       ])
-  //       .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
-  //       .catch((e) => console.log("Error PUT request =>", e));
-  //   }
-  // } else {
-  //   return res.status(400).send("ID does not exist");
-  // }
+  const doesIdExists = await pool
+    .query("SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)", [parseInt(id)])
+    .then((result) => result.rows[0].exists);
+
+  if (doesIdExists) {
+    return pool
+      .query(query, dbArgs)
+      .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
+      .catch((e) => console.log("Error PUT request =>", e));
+  } else {
+    return res.status(400).send("ID does not exist");
+  }
 };
 
 exports.deleteExpenseEntry = async (req, res) => {
