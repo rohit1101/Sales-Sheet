@@ -70,35 +70,43 @@ exports.addSalesEntry = (req, res) => {
 exports.updateSalesEntry = async (req, res) => {
   const { id } = req.params;
   const { date, amount_paid, card_id } = req.body;
-  let dbArgs = [];
-  amount_paid && dbArgs.push(parseFloat(amount_paid));
-  date && dbArgs.push(date);
-  card_id && dbArgs.push(parseInt(card_id));
+  let dbArgs = Object.keys(req.body);
+  console.log(dbArgs);
+  let dbVals = [];
+  let query = "";
 
-  let query = `update sales set 
-  ${amount_paid ? "amount_paid = $1" : ""}
-  ${date ? "date = $2" : ""}
-  ${card_id ? "card_id = $3" : ""}
-  where id=${id};`.trim();
+  amount_paid && dbVals.push(+amount_paid);
+  date && dbVals.push(date);
+  card_id && dbVals.push(+card_id);
 
-  console.log(query, dbArgs);
+  if (dbArgs.length === 1) {
+    query = `update sales set ${dbArgs[0]}=$1  where id=${id};`;
+  } else {
+    const updateStr = [...dbArgs]
+      .map((item, index) => item + `=$${index + 1}`)
+      .join(",");
+    console.log(updateStr);
+    query = `update sales set ${updateStr} where id=${id};`;
+  }
+
+  console.log(query, dbArgs, dbVals);
 
   if (isNaN(id)) {
     return res.status(400).send("Invalid ID");
   }
 
-  // const doesIdExists = await pool
-  //   .query("SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)", [parseInt(id)])
-  //   .then((result) => result.rows[0].exists);
+  const doesIdExists = await pool
+    .query("SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)", [parseInt(id)])
+    .then((result) => result.rows[0].exists);
 
-  // if (doesIdExists) {
-  //   return pool
-  //     .query(query, dbArgs)
-  //     .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
-  //     .catch((e) => console.log("Error PUT request =>", e));
-  // } else {
-  //   return res.status(400).send("ID does not exist");
-  // }
+  if (doesIdExists) {
+    return pool
+      .query(query, dbVals)
+      .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
+      .catch((e) => console.log("Error PUT request =>", e));
+  } else {
+    return res.status(400).send("ID does not exist");
+  }
 };
 
 exports.deleteSalesEntry = async (req, res) => {
@@ -236,3 +244,14 @@ exports.deleteExpenseEntry = async (req, res) => {
     return res.status(400).send("ID does not exist");
   }
 };
+// ${
+//   amount_paid && date && card_id
+//     ? "amount_paid = $1,date = $2,card_id = $3"
+//     : ""
+// }
+// ${amount_paid && date ? "amount_paid = $1,date = $2" : ""}
+// ${date && card_id ? "date=$1,card_id=$2" : ""}
+// ${card_id && amount_paid ? "card_id=$1,amount_paid=$2" : ""}
+// ${amount_paid ? "amount_paid = $1" : ""}
+// ${date ? "date = $1" : ""}
+// ${card_id ? "card_id = $1" : ""}
