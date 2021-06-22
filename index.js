@@ -1,10 +1,10 @@
 const {
-  getAllSales,
-  addSalesEntry,
-  updateSalesEntry,
-  deleteSalesEntry,
+  getAllIncome,
+  addIncomeEntry,
+  updateIncomeEntry,
+  deleteIncomeEntry,
   filterSales,
-  getAllExpenses,
+  getAllExpense,
   addExpenseEntry,
   updateExpenseEntry,
   deleteExpenseEntry,
@@ -34,16 +34,15 @@ const requestTime = (req, res, next) => {
 
 app.use(requestTime);
 
-app.get("/sales", getAllSales);
+app.get("/sales", getAllIncome);
 app.get("/filter", filterSales);
-app.post("/sale", addSalesEntry);
-app.put("/sales/:id", updateSalesEntry);
-app.delete("/sales/:id", deleteSalesEntry);
+app.post("/sale", addIncomeEntry);
+app.put("/sales/:id", updateIncomeEntry);
+app.delete("/sales/:id", deleteIncomeEntry);
 app.get("/expenses", getAllExpenses);
 app.post("/expense", addExpenseEntry);
 app.put("/expenses/:id", updateExpenseEntry);
 app.delete("/expenses/:id", deleteExpenseEntry);
-// app.get("/users/:userId/sales/:salesId", addNewSalesEntry);
 
 app.listen(3000, () => {
   console.log(`server running on http://${hostname}:${port}`);

@@ -11,7 +11,7 @@ const pool = new Pool({
   port: "5432",
 });
 
-exports.getAllSales = (req, res) => {
+exports.getAllIncome = (req, res) => {
   const { cardId, date } = req.query;
 
   if (cardId && date) {
@@ -42,7 +42,7 @@ exports.getAllSales = (req, res) => {
   }
 };
 
-exports.addSalesEntry = (req, res) => {
+exports.addIncomeEntry = (req, res) => {
   const { card_id, sales_rep_id, date, amount_paid } = req.body;
   console.log(card_id, sales_rep_id, date, amount_paid);
   if (Object.keys(req.body).length === 3) {
@@ -67,7 +67,7 @@ exports.addSalesEntry = (req, res) => {
   }
 };
 
-exports.updateSalesEntry = async (req, res) => {
+exports.updateIncomeEntry = async (req, res) => {
   const { id } = req.params;
   const { date, amount_paid, card_id } = req.body;
   let dbArgs = Object.keys(req.body);
@@ -109,7 +109,7 @@ exports.updateSalesEntry = async (req, res) => {
   }
 };
 
-exports.deleteSalesEntry = async (req, res) => {
+exports.deleteIncomeEntry = async (req, res) => {
   console.log(req.params);
   const { id } = req.params;
 
@@ -157,7 +157,7 @@ exports.filterSales = (req, res) => {
         .catch((e) => console.log("ERROR while filtering:", e));
 };
 
-exports.getAllExpenses = (req, res) => {
+exports.getAllExpense = (req, res) => {
   return pool
     .query(`select * from expenses`)
     .then((result) => res.send(result.rows))
