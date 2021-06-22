@@ -12,26 +12,28 @@ const pool = new Pool({
 });
 
 exports.getAllIncome = (req, res) => {
-  const { cardId, date } = req.query;
+  const { card_id, date } = req.query;
 
-  if (cardId && date) {
+  if (Object.keys(req.query).length > 0) {
+    let dbArgs = Object.keys(req.query);
+    console.log(dbArgs);
+    let dbVals = [];
+    let query = "";
+
+    card_id && dbVals.push(+card_id);
+    date && dbVals.push(date);
+
+    const updateStr = [...dbArgs]
+      .map((item, index) =>
+        item === "date"
+          ? `${item}(${item})=$${index + 1}`
+          : `${item}=$${index + 1}`
+      )
+      .join(",");
+    query = `select * from sales where ${updateStr};`;
+    console.log(query, dbArgs, dbVals);
     return pool
-      .query(`SELECT * FROM sales where date(date) = $1 and card_id=$2`, [
-        date,
-        parseInt(cardId),
-      ])
-      .then((result) => res.send(result.rows))
-      .catch((e) => console.log("error", e));
-  }
-  if (cardId) {
-    return pool
-      .query(`SELECT * FROM sales where card_id = $1`, [cardId])
-      .then((result) => res.send(result.rows))
-      .catch((e) => console.log("error", e));
-  }
-  if (date) {
-    return pool
-      .query(`SELECT * FROM sales where date(date) = $1`, [date])
+      .query(query, dbVals)
       .then((result) => res.send(result.rows))
       .catch((e) => console.log("error", e));
   } else {
@@ -131,6 +133,7 @@ exports.deleteIncomeEntry = async (req, res) => {
 };
 
 exports.getAllExpenses = (req, res) => {
+  // implement filtering like in getAllIncome
   return pool
     .query(`select * from expenses`)
     .then((result) => res.send(result.rows))
