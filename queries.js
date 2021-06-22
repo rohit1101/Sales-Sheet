@@ -59,16 +59,12 @@ exports.addIncomeEntry = (req, res) => {
   const updateStr = [...dbArgs].map((item, index) => item).join(",");
   query = `insert into sales(${updateStr}) values($1,$2,$3,$4) returning *;`;
 
-  console.log(query, dbArgs, dbVals);
-
-  if (query) {
-    return pool
-      .query(query, dbVals)
-      .then((result) => res.send(result.rows[0]))
-      .catch((e) => console.log("error", e));
-  } else {
-    res.status(400).send("Bad Request");
-  }
+  query
+    ? pool
+        .query(query, dbVals)
+        .then((result) => res.send(result.rows[0]))
+        .catch((e) => console.log("error", e))
+    : res.status(400).send("Bad Request");
 };
 
 exports.updateIncomeEntry = async (req, res) => {
