@@ -112,7 +112,6 @@ exports.updateIncomeEntry = async (req, res) => {
 };
 
 exports.deleteIncomeEntry = async (req, res) => {
-  console.log(req.params);
   const { id } = req.params;
 
   if (isNaN(id)) {
@@ -123,43 +122,15 @@ exports.deleteIncomeEntry = async (req, res) => {
     .query("SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)", [parseInt(id)])
     .then((result) => result.rows[0].exists);
 
-  if (doesIdExists) {
-    return pool
-      .query("delete from sales where id=$1", [parseInt(id)])
-      .then(() => res.status(200).send(`Deleted an entry with id:${id}`))
-      .catch((e) => console.log("Error DELETE request =>", e));
-  } else {
-    return res.status(400).send("ID does not exist");
-  }
-};
-
-exports.filterSales = (req, res) => {
-  const { by } = req.query;
-  console.log(by);
-  if (Object.keys(req.query).length > 1) {
-    const { start, end } = req.query;
-    return pool
-      .query(
-        `select card_id,date,amount_paid from sales where date(date) >= $1 and date(date) <$2`,
-        [start, end]
-      )
-      .then((result) => res.send(result.rows))
-      .catch((e) => console.log("ERROR while filtering:", e));
-  }
-  return by === "date"
+  doesIdExists
     ? pool
-        .query(
-          `select date(date),sum(amount_paid) from sales group by date(date)`
-        )
-        .then((result) => res.send(result.rows))
-        .catch((e) => console.log("ERROR while filtering:", e))
-    : pool
-        .query(`select card_id,sum(amount_paid) from sales group by card_id`)
-        .then((result) => res.send(result.rows))
-        .catch((e) => console.log("ERROR while filtering:", e));
+        .query("delete from sales where id=$1", [parseInt(id)])
+        .then(() => res.status(200).send(`Deleted an entry with id:${id}`))
+        .catch((e) => console.log("Error DELETE request =>", e))
+    : res.status(400).send("ID does not exist");
 };
 
-exports.getAllExpense = (req, res) => {
+exports.getAllExpenses = (req, res) => {
   return pool
     .query(`select * from expenses`)
     .then((result) => res.send(result.rows))
@@ -257,4 +228,30 @@ exports.deleteExpenseEntry = async (req, res) => {
   } else {
     return res.status(400).send("ID does not exist");
   }
+};
+
+exports.filterSales = (req, res) => {
+  const { by } = req.query;
+  console.log(by);
+  if (Object.keys(req.query).length > 1) {
+    const { start, end } = req.query;
+    return pool
+      .query(
+        `select card_id,date,amount_paid from sales where date(date) >= $1 and date(date) <$2`,
+        [start, end]
+      )
+      .then((result) => res.send(result.rows))
+      .catch((e) => console.log("ERROR while filtering:", e));
+  }
+  return by === "date"
+    ? pool
+        .query(
+          `select date(date),sum(amount_paid) from sales group by date(date)`
+        )
+        .then((result) => res.send(result.rows))
+        .catch((e) => console.log("ERROR while filtering:", e))
+    : pool
+        .query(`select card_id,sum(amount_paid) from sales group by card_id`)
+        .then((result) => res.send(result.rows))
+        .catch((e) => console.log("ERROR while filtering:", e));
 };

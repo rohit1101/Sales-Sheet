@@ -4,7 +4,7 @@ const {
   updateIncomeEntry,
   deleteIncomeEntry,
   filterSales,
-  getAllExpense,
+  getAllExpenses,
   addExpenseEntry,
   updateExpenseEntry,
   deleteExpenseEntry,
@@ -39,7 +39,7 @@ app.post("/income", addIncomeEntry);
 app.put("/income/:id", updateIncomeEntry);
 app.delete("/income/:id", deleteIncomeEntry);
 
-app.get("/expenses", getAllExpense);
+app.get("/expenses", getAllExpenses);
 app.post("/expense", addExpenseEntry);
 app.put("/expenses/:id", updateExpenseEntry);
 app.delete("/expenses/:id", deleteExpenseEntry);
