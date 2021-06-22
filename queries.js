@@ -71,7 +71,7 @@ exports.updateIncomeEntry = async (req, res) => {
   const { id } = req.params;
   const { date, amount_paid, card_id } = req.body;
   let dbArgs = Object.keys(req.body);
-  console.log(dbArgs);
+
   let dbVals = [];
   let query = "";
 
@@ -85,11 +85,9 @@ exports.updateIncomeEntry = async (req, res) => {
     const updateStr = [...dbArgs]
       .map((item, index) => item + `=$${index + 1}`)
       .join(",");
-    console.log(updateStr);
+
     query = `update sales set ${updateStr} where id=${id};`;
   }
-
-  console.log(query, dbArgs, dbVals);
 
   if (isNaN(id)) {
     return res.status(400).send("Invalid ID");
@@ -99,14 +97,12 @@ exports.updateIncomeEntry = async (req, res) => {
     .query("SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)", [parseInt(id)])
     .then((result) => result.rows[0].exists);
 
-  if (doesIdExists) {
-    return pool
-      .query(query, dbVals)
-      .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
-      .catch((e) => console.log("Error PUT request =>", e));
-  } else {
-    return res.status(400).send("ID does not exist");
-  }
+  doesIdExists
+    ? pool
+        .query(query, dbVals)
+        .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
+        .catch((e) => console.log("Error PUT request =>", e))
+    : res.status(400).send("ID does not exist");
 };
 
 exports.deleteIncomeEntry = async (req, res) => {
