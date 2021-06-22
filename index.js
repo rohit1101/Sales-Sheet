@@ -48,12 +48,3 @@ app.delete("/expenses/:id", deleteExpenseEntry);
 app.listen(3000, () => {
   console.log(`server running on http://${hostname}:${port}`);
 });
-
-// console.log(
-//   req.url,
-//   req.headers,
-//   req.route,
-//   req.params,
-//   req.path,
-//   req.method
-// );
