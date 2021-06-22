@@ -147,7 +147,6 @@ exports.addExpenseEntry = (req, res) => {
   const updateStr = [...dbArgs].map((item, index) => item).join(",");
   query = `insert into expenses(${updateStr}) values($1,$2,$3,$4) returning *;`;
 
-  console.log(query, dbVals);
   query
     ? pool
         .query(query, dbVals)
@@ -160,7 +159,7 @@ exports.updateExpenseEntry = async (req, res) => {
   const { id } = req.params;
   const { date, amount_paid, description } = req.body;
   let dbArgs = Object.keys(req.body);
-  console.log(dbArgs);
+
   let dbVals = [];
   let query = "";
 
@@ -177,8 +176,6 @@ exports.updateExpenseEntry = async (req, res) => {
     console.log(updateStr);
     query = `update expenses set ${updateStr} where id=${id};`;
   }
-
-  console.log(query, dbArgs, dbVals);
 
   if (isNaN(id)) {
     return res.status(400).send("Invalid ID");
@@ -201,7 +198,6 @@ exports.updateExpenseEntry = async (req, res) => {
 };
 
 exports.deleteExpenseEntry = async (req, res) => {
-  console.log(req.params);
   const { id } = req.params;
 
   if (isNaN(id)) {
@@ -214,14 +210,12 @@ exports.deleteExpenseEntry = async (req, res) => {
     ])
     .then((result) => result.rows[0].exists);
 
-  if (doesIdExists) {
-    return pool
-      .query("delete from expenses where id=$1", [parseInt(id)])
-      .then(() => res.status(200).send(`Deleted an entry with id:${id}`))
-      .catch((e) => console.log("Error DELETE request =>", e));
-  } else {
-    return res.status(400).send("ID does not exist");
-  }
+  doesIdExists
+    ? pool
+        .query("delete from expenses where id=$1", [parseInt(id)])
+        .then(() => res.status(200).send(`Deleted an entry with id:${id}`))
+        .catch((e) => console.log("Error DELETE request =>", e))
+    : res.status(400).send("ID does not exist");
 };
 
 exports.filterSales = (req, res) => {
