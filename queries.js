@@ -125,7 +125,7 @@ exports.deleteIncomeEntry = async (req, res) => {
 };
 
 exports.getAllExpenses = (req, res) => {
-  // implement filtering like in getAllIncome
+  // implement filter by date like in getAllIncome
   return pool
     .query(`select * from expenses`)
     .then((result) => res.send(result.rows))
@@ -134,27 +134,26 @@ exports.getAllExpenses = (req, res) => {
 
 exports.addExpenseEntry = (req, res) => {
   const { sales_rep_id, date, amount_paid, description } = req.body;
-  console.log(sales_rep_id, date, amount_paid, description);
-  if (Object.keys(req.body).length === 3) {
-    return pool
-      .query(
-        "insert into expenses(sales_rep_id,amount_paid,description)values($1,$2,$3) returning *",
-        [sales_rep_id, parseFloat(amount_paid), description]
-      )
-      .then((result) => res.send(result.rows[0]))
-      .catch((e) => console.log("error", e));
-  }
-  if (Object.keys(req.body).length === 4) {
-    return pool
-      .query(
-        "insert into expenses(sales_rep_id,date,amount_paid,description)values($1,$2,$3,$4) returning *",
-        [sales_rep_id, date, parseFloat(amount_paid), description]
-      )
-      .then((result) => res.send(result.rows[0]))
-      .catch((e) => console.log("error", e));
-  } else {
-    res.status(400).send("Bad Request");
-  }
+  let dbArgs = Object.keys(req.body);
+
+  let dbVals = [];
+  let query = "";
+
+  sales_rep_id && dbVals.push(+sales_rep_id);
+  date && dbVals.push(date);
+  amount_paid && dbVals.push(+amount_paid);
+  description && dbVals.push(description);
+
+  const updateStr = [...dbArgs].map((item, index) => item).join(",");
+  query = `insert into expenses(${updateStr}) values($1,$2,$3,$4) returning *;`;
+
+  console.log(query, dbVals);
+  query
+    ? pool
+        .query(query, dbVals)
+        .then((result) => res.send(result.rows[0]))
+        .catch((e) => console.log("error", e))
+    : res.status(400).send("Bad Request");
 };
 
 exports.updateExpenseEntry = async (req, res) => {
