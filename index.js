@@ -34,15 +34,17 @@ const requestTime = (req, res, next) => {
 
 app.use(requestTime);
 
-app.get("/sales", getAllIncome);
-app.get("/filter", filterSales);
-app.post("/sale", addIncomeEntry);
-app.put("/sales/:id", updateIncomeEntry);
-app.delete("/sales/:id", deleteIncomeEntry);
+app.get("/income", getAllIncome);
+app.post("/income", addIncomeEntry);
+app.put("/income/:id", updateIncomeEntry);
+app.delete("/income/:id", deleteIncomeEntry);
+
 app.get("/expenses", getAllExpense);
 app.post("/expense", addExpenseEntry);
 app.put("/expenses/:id", updateExpenseEntry);
 app.delete("/expenses/:id", deleteExpenseEntry);
+
+app.get("/filter", filterSales);
 
 app.listen(3000, () => {
   console.log(`server running on http://${hostname}:${port}`);
