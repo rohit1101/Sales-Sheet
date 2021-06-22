@@ -44,22 +44,24 @@ exports.getAllIncome = (req, res) => {
 
 exports.addIncomeEntry = (req, res) => {
   const { card_id, sales_rep_id, date, amount_paid } = req.body;
-  console.log(card_id, sales_rep_id, date, amount_paid);
-  if (Object.keys(req.body).length === 3) {
+  let dbArgs = Object.keys(req.body);
+
+  let dbVals = [];
+  let query = "";
+
+  card_id && dbVals.push(+card_id);
+  sales_rep_id && dbVals.push(+sales_rep_id);
+  date && dbVals.push(date);
+  amount_paid && dbVals.push(+amount_paid);
+
+  const updateStr = [...dbArgs].map((item, index) => item).join(",");
+  query = `insert into sales(${updateStr}) values($1,$2,$3,$4) returning *;`;
+
+  console.log(query, dbArgs, dbVals);
+
+  if (query) {
     return pool
-      .query(
-        "insert into sales(card_id,sales_rep_id,amount_paid)values($1,$2,$3) returning *",
-        [parseInt(card_id), sales_rep_id, parseFloat(amount_paid)]
-      )
-      .then((result) => res.send(result.rows[0]))
-      .catch((e) => console.log("error", e));
-  }
-  if (Object.keys(req.body).length === 4) {
-    return pool
-      .query(
-        "insert into sales(card_id,sales_rep_id,date,amount_paid)values($1,$2,$3,$4) returning *",
-        [parseInt(card_id), sales_rep_id, date, parseFloat(amount_paid)]
-      )
+      .query(query, dbVals)
       .then((result) => res.send(result.rows[0]))
       .catch((e) => console.log("error", e));
   } else {
