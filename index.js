@@ -39,7 +39,7 @@ app.get("/filter", filterSales);
 app.post("/sale", addIncomeEntry);
 app.put("/sales/:id", updateIncomeEntry);
 app.delete("/sales/:id", deleteIncomeEntry);
-app.get("/expenses", getAllExpenses);
+app.get("/expenses", getAllExpense);
 app.post("/expense", addExpenseEntry);
 app.put("/expenses/:id", updateExpenseEntry);
 app.delete("/expenses/:id", deleteExpenseEntry);
