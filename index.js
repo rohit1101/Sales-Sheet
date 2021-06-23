@@ -1,8 +1,13 @@
 const {
-  getAllSales,
-  addSalesEntry,
-  updateSalesEntry,
-  deleteSalesEntry,
+  getAllIncome,
+  addIncomeEntry,
+  updateIncomeEntry,
+  deleteIncomeEntry,
+  filterSales,
+  getAllExpenses,
+  addExpenseEntry,
+  updateExpenseEntry,
+  deleteExpenseEntry,
 } = require("./queries");
 const express = require("express");
 const cors = require("cors");
@@ -29,21 +34,18 @@ const requestTime = (req, res, next) => {
 
 app.use(requestTime);
 
-app.get("/sales", getAllSales);
-app.post("/sale", addSalesEntry);
-app.put("/sales/:id", updateSalesEntry);
-app.delete("/sales/:id", deleteSalesEntry);
-// app.get("/users/:userId/sales/:salesId", addNewSalesEntry);
+app.get("/income", getAllIncome);
+app.post("/income", addIncomeEntry);
+app.put("/income/:id", updateIncomeEntry);
+app.delete("/income/:id", deleteIncomeEntry);
+
+app.get("/expenses", getAllExpenses);
+app.post("/expense", addExpenseEntry);
+app.put("/expenses/:id", updateExpenseEntry);
+app.delete("/expenses/:id", deleteExpenseEntry);
+
+app.get("/filter", filterSales);
 
 app.listen(3000, () => {
-  console.log(`server running...`);
+  console.log(`server running on http://${hostname}:${port}`);
 });
-
-// console.log(
-//   req.url,
-//   req.headers,
-//   req.route,
-//   req.params,
-//   req.path,
-//   req.method
-// );
