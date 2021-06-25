@@ -93,9 +93,10 @@ exports.updateIncomeEntry = async (req, res) => {
     return res.status(400).send("Invalid ID");
   }
 
-  const doesIdExists = await pool
-    .query("SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)", [parseInt(id)])
-    .then((result) => result.rows[0].exists);
+  const doesIdExists = await pool.query(
+    "SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)",
+    [parseInt(id)]
+  );
 
   doesIdExists
     ? pool
@@ -112,9 +113,10 @@ exports.deleteIncomeEntry = async (req, res) => {
     return res.status(400).send("Invalid ID");
   }
 
-  const doesIdExists = await pool
-    .query("SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)", [parseInt(id)])
-    .then((result) => result.rows[0].exists);
+  const doesIdExists = await pool.query(
+    "SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)",
+    [parseInt(id)]
+  );
 
   doesIdExists
     ? pool
@@ -181,11 +183,10 @@ exports.updateExpenseEntry = async (req, res) => {
     return res.status(400).send("Invalid ID");
   }
 
-  const doesIdExists = await pool
-    .query("SELECT EXISTS(SELECT 1 FROM expenses WHERE id = $1)", [
-      parseInt(id),
-    ])
-    .then((result) => result.rows[0].exists);
+  const doesIdExists = await pool.query(
+    "SELECT EXISTS(SELECT 1 FROM expenses WHERE id = $1)",
+    [parseInt(id)]
+  );
 
   if (doesIdExists) {
     return pool
@@ -204,11 +205,10 @@ exports.deleteExpenseEntry = async (req, res) => {
     return res.status(400).send("Invalid ID");
   }
 
-  const doesIdExists = await pool
-    .query("SELECT EXISTS(SELECT 1 FROM expenses WHERE id = $1)", [
-      parseInt(id),
-    ])
-    .then((result) => result.rows[0].exists);
+  const doesIdExists = await pool.query(
+    "SELECT EXISTS(SELECT 1 FROM expenses WHERE id = $1)",
+    [parseInt(id)]
+  );
 
   doesIdExists
     ? pool
