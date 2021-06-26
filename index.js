@@ -46,6 +46,6 @@ app.delete("/expenses/:id", deleteExpenseEntry);
 
 app.get("/filter", filterSales);
 
-app.listen(3000, () => {
+app.listen(port, () => {
   console.log(`server running on http://${hostname}:${port}`);
 });
