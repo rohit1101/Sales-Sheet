@@ -34,10 +34,10 @@ const requestTime = (req, res, next) => {
 
 app.use(requestTime);
 
-app.route("income").get(getAllIncome).post(addIncomeEntry);
+app.route("/income").get(getAllIncome).post(addIncomeEntry);
 app.route("/income/:id").put(updateIncomeEntry).delete(deleteIncomeEntry);
 
-app.route("expense").get(getAllExpenses).post(addExpenseEntry);
+app.route("/expense").get(getAllExpenses).post(addExpenseEntry);
 app.route("/expenses/:id").put(updateExpenseEntry).delete(deleteExpenseEntry);
 
 app.get("/filter", filterSales);
