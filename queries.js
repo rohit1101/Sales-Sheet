@@ -70,8 +70,7 @@ exports.addIncomeEntry = (req, res) => {
 exports.updateIncomeEntry = async (req, res) => {
   const { id } = req.params;
   const { date, amount_paid, card_id } = req.body;
-  console.log(body);
-
+  let dbArgs = Object.keys(req.body);
   let dbVals = [];
   let query = "";
 
