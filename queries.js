@@ -11,6 +11,17 @@ const pool = new Pool({
   port: "5432",
 });
 
+exports.registerNewUser = (req, res) => {
+  const { username, password } = req.body;
+  return pool
+    .query(`insert into users(username,password) values($1,$2) returning *`, [
+      username,
+      password,
+    ])
+    .then((result) => res.send(result.rows))
+    .catch((e) => console.log("error", e));
+};
+
 exports.getAllIncome = (req, res) => {
   const { card_id, date } = req.query;
 
