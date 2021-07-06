@@ -8,6 +8,8 @@ const {
   addExpenseEntry,
   updateExpenseEntry,
   deleteExpenseEntry,
+  registerNewUser,
+  loginUser,
 } = require("./queries");
 const express = require("express");
 const cors = require("cors");
@@ -33,6 +35,9 @@ const requestTime = (req, res, next) => {
 };
 
 app.use(requestTime);
+
+app.route("/register").post(registerNewUser);
+app.route("/login").get(loginUser);
 
 app.route("/income").get(getAllIncome).post(addIncomeEntry);
 app.route("/income/:id").put(updateIncomeEntry).delete(deleteIncomeEntry);

@@ -1,4 +1,5 @@
 const pg = require("pg");
+const hashPassword = require("./utils/hash").hashPassword;
 const { URL, URLSearchParams } = require("url");
 
 const { Pool } = pg;
@@ -10,6 +11,35 @@ const pool = new Pool({
   password: "done",
   port: "5432",
 });
+
+exports.registerNewUser = async (req, res) => {
+  const { username, password } = req.body;
+  const { salt, passwordHash } = hashPassword(password);
+  try {
+    const userStatus = await pool.query(
+      `insert into users(username,password,salt) values($1,$2,$3) returning *`,
+      [username, passwordHash, salt]
+    );
+    return res.status(201).send(userStatus.rows[0]);
+  } catch (error) {
+    console.log("error:", error.detail);
+    res.status(403).send(error.detail);
+  }
+};
+
+exports.loginUser = async (req, res) => {
+  const username = "msd";
+
+  try {
+    const loginStatus = await pool.query(
+      `select * from users where username=$1;`,
+      [username]
+    );
+    res.status(200).send(loginStatus);
+  } catch (error) {
+    console.log("error while logging in:", error);
+  }
+};
 
 exports.getAllIncome = (req, res) => {
   const { card_id, date } = req.query;
