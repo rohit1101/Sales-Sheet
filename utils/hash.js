@@ -1,19 +1,14 @@
-const crypto = require("crypto");
+const bcrypt = require("bcrypt");
 
-function generateSalt(len) {
-  return crypto.randomBytes(len).toString("hex").slice(0, len);
-}
-
-function encryptPassword(password, salt) {
-  const hash = crypto.createHmac("sha512", salt);
-  hash.update(password);
-  const value = hash.digest("hex");
+exports.encryptPassword = async (password) => {
+  const salt = await bcrypt.genSalt();
+  const hashedPassword = await bcrypt.hash(password, salt);
   return {
-    salt: salt,
-    passwordHash: value,
+    salt,
+    hashedPassword,
   };
-}
+};
 
-exports.hashPassword = (userpassword) => {
-  return encryptPassword(userpassword, generateSalt(8));
+exports.decryptPassword = async (password, passwordHash) => {
+  return await bcrypt.compare(password, passwordHash);
 };

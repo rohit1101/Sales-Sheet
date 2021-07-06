@@ -1,6 +1,7 @@
 const pg = require("pg");
-const hashPassword = require("./utils/hash").hashPassword;
+
 const { URL, URLSearchParams } = require("url");
+const { encryptPassword, decryptPassword } = require("./utils/hash");
 
 const { Pool } = pg;
 
@@ -14,11 +15,12 @@ const pool = new Pool({
 
 exports.registerNewUser = async (req, res) => {
   const { username, password } = req.body;
-  const { salt, passwordHash } = hashPassword(password);
+  const { hashedPassword, salt } = await encryptPassword(password);
+
   try {
     const userStatus = await pool.query(
       `insert into users(username,password,salt) values($1,$2,$3) returning *`,
-      [username, passwordHash, salt]
+      [username, hashedPassword, salt]
     );
     return res.status(201).send(userStatus.rows[0]);
   } catch (error) {
@@ -28,16 +30,31 @@ exports.registerNewUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-  const username = "msd";
+  const username = "kohli";
+  const password = "catain";
 
   try {
+    // To check if the username exists in the DB.
     const loginStatus = await pool.query(
-      `select * from users where username=$1;`,
+      `SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)`,
       [username]
     );
-    res.status(200).send(loginStatus);
+
+    if (loginStatus.rows[0].exists) {
+      const user = await pool.query(`select * from users where username=$1`, [
+        username,
+      ]);
+      const passwordCheck = await decryptPassword(
+        password,
+        user.rows[0].password
+      );
+      passwordCheck
+        ? res.status(200).send("Logged In")
+        : res.status(400).send("Incorrect password");
+    }
   } catch (error) {
     console.log("error while logging in:", error);
+    res.status(404).send("User does not exist");
   }
 };
 
