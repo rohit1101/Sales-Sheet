@@ -18,8 +18,35 @@ exports.registerNewUser = (req, res) => {
       username,
       password,
     ])
-    .then((result) => res.send(result.rows))
-    .catch((e) => console.log("error", e));
+    .then((result) => {
+      res.send(result.rows[0]);
+    })
+    .catch((e) => console.log("error: username already exists", e));
+};
+
+exports.loginUser = (req, res) => {
+  const username = "msd";
+  return pool
+    .query(`select * from users where username=$1;`, [username])
+    .then((result) => {
+      if (result.rows.length > 0) {
+        console.log(result.rows);
+        return done(null, result.rows[0].username);
+      }
+    })
+    .catch((e) => console.log("error while logging in:", e));
+  // User.findOne({ username: username }, function (err, user) {
+  //   if (err) {
+  //     return done(err);
+  //   }
+  //   if (!user) {
+  //     return done(null, false, { message: "Incorrect username." });
+  //   }
+  //   if (!user.validPassword(password)) {
+  //     return done(null, false, { message: "Incorrect password." });
+  //   }
+  //   return done(null, user);
+  // });
 };
 
 exports.getAllIncome = (req, res) => {

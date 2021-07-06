@@ -10,6 +10,7 @@ const {
   updateExpenseEntry,
   deleteExpenseEntry,
   registerNewUser,
+  loginUser,
 } = require("./queries");
 
 const express = require("express");
@@ -58,6 +59,7 @@ const port = 5000;
 app.use(requestTime);
 
 app.route("/register").post(registerNewUser);
+app.route("/login").get(loginUser);
 
 app.route("/income").get(getAllIncome).post(addIncomeEntry);
 app.route("/income/:id").put(updateIncomeEntry).delete(deleteIncomeEntry);
