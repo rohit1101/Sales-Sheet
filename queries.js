@@ -30,9 +30,8 @@ exports.registerNewUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-  const username = "kohli";
-  const password = "catain";
-  console.log(req.body);
+  let { username, password } = req.body;
+
   try {
     // To check if the username exists in the DB.
     const loginStatus = await pool.query(
@@ -52,11 +51,11 @@ exports.loginUser = async (req, res) => {
         ? res.status(200).send("Logged In")
         : res.status(400).send("Incorrect password");
     } else {
-      res.status(400).send("User does not exist");
+      res.status(400).send("User does not exist.");
     }
   } catch (error) {
     console.log("error while logging in:", error);
-    res.status(404).send("User does not exist");
+    res.status(404).send(error);
   }
 };
 
