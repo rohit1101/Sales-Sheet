@@ -15,12 +15,12 @@ const pool = new Pool({
 
 exports.registerNewUser = async (req, res) => {
   const { username, password } = req.body;
-  const { hashedPassword, salt } = await encryptPassword(password);
+  const { hashedPassword } = await encryptPassword(password);
 
   try {
     const userStatus = await pool.query(
-      `insert into users(username,password,salt) values($1,$2,$3) returning *`,
-      [username, hashedPassword, salt]
+      `insert into users(username,password) values($1,$2) returning *`,
+      [username, hashedPassword]
     );
     return res.status(201).send(userStatus.rows[0]);
   } catch (error) {
@@ -32,14 +32,14 @@ exports.registerNewUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   const username = "kohli";
   const password = "catain";
-
+  console.log(req.body);
   try {
     // To check if the username exists in the DB.
     const loginStatus = await pool.query(
       `SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)`,
       [username]
     );
-
+    console.log(loginStatus.rows);
     if (loginStatus.rows[0].exists) {
       const user = await pool.query(`select * from users where username=$1`, [
         username,
@@ -51,6 +51,8 @@ exports.loginUser = async (req, res) => {
       passwordCheck
         ? res.status(200).send("Logged In")
         : res.status(400).send("Incorrect password");
+    } else {
+      res.status(400).send("User does not exist");
     }
   } catch (error) {
     console.log("error while logging in:", error);
