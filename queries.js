@@ -1,7 +1,8 @@
 const pg = require("pg");
-
+const jwt = require("jsonwebtoken");
 const { URL, URLSearchParams } = require("url");
 const { encryptPassword, decryptPassword } = require("./utils/hash");
+const { createToken } = require("./utils/createToken");
 
 const { Pool } = pg;
 
@@ -22,7 +23,12 @@ exports.registerNewUser = async (req, res) => {
       `insert into users(username,password) values($1,$2) returning *`,
       [username, hashedPassword]
     );
-    return res.status(201).send(userStatus.rows[0]);
+    const token = createToken(userStatus.rows[0].id);
+    res.cookie("jwt", token, {
+      maxAge: 1000 * 60 * 60 * 24 * 2,
+      httpOnly: true,
+    });
+    res.status(201).json(userStatus.rows[0].id);
   } catch (error) {
     console.log("error:", error.detail);
     res.status(403).send(error.detail);
@@ -38,7 +44,7 @@ exports.loginUser = async (req, res) => {
       `SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)`,
       [username]
     );
-    console.log(loginStatus.rows);
+
     if (loginStatus.rows[0].exists) {
       const user = await pool.query(`select * from users where username=$1`, [
         username,
@@ -47,9 +53,16 @@ exports.loginUser = async (req, res) => {
         password,
         user.rows[0].password
       );
-      passwordCheck
-        ? res.status(200).send("Logged In")
-        : res.status(400).send("Incorrect password");
+      if (passwordCheck) {
+        const token = createToken(userStatus.rows[0].id);
+        res.cookie("jwt", token, {
+          maxAge: 1000 * 60 * 60 * 24 * 2,
+          httpOnly: true,
+        });
+        res.status(200).json(userStatus.rows[0]);
+      } else {
+        res.status(400).send("Incorrect password");
+      }
     } else {
       res.status(400).send("User does not exist.");
     }

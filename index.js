@@ -19,7 +19,7 @@ app.use(
   cors({
     // origin: "http://localhost:3000",
     origin: "*",
-    credentials: true,
+    // credentials: true,
     // methods: ["GET", "POST"],
   })
 );
@@ -37,12 +37,6 @@ const requestTime = (req, res, next) => {
 };
 
 app.use(requestTime);
-
-// app.route("/set-cookies").get((req, res) => {
-//   // res.setHeader("Set-Cookie", ["newUser=true", "maxAge:60"]);
-//   res.cookie("name", "toby", { maxAge: 1000 * 10, httpOnly: true });
-//   res.send("You got the cookie");
-// });
 
 app.route("/register").post(registerNewUser);
 app.route("/login").post(loginUser);
