@@ -2,7 +2,7 @@ const pg = require("pg");
 const jwt = require("jsonwebtoken");
 const { URL, URLSearchParams } = require("url");
 const { encryptPassword, decryptPassword } = require("./utils/hash");
-const { createToken } = require("./utils/createToken");
+const { createToken } = require("./utils/tokens");
 
 const { Pool } = pg;
 
@@ -53,7 +53,7 @@ exports.loginUser = async (req, res) => {
         user.rows[0].password
       );
       if (passwordCheck) {
-        const token = createToken(loginStatus.rows[0].id);
+        const token = createToken(user.rows[0]);
         res.status(200).json({
           token,
           message: "Logged In",
