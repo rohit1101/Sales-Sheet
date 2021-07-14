@@ -24,11 +24,10 @@ exports.registerNewUser = async (req, res) => {
       [username, hashedPassword]
     );
     const token = createToken(userStatus.rows[0].id);
-    res.cookie("jwt", token, {
-      maxAge: 1000 * 60 * 60 * 24 * 2,
-      httpOnly: true,
+    res.status(200).json({
+      token,
+      message: "Registered and Logged In",
     });
-    res.status(201).json(userStatus.rows[0].id);
   } catch (error) {
     console.log("error:", error.detail);
     res.status(403).send(error.detail);
@@ -54,17 +53,16 @@ exports.loginUser = async (req, res) => {
         user.rows[0].password
       );
       if (passwordCheck) {
-        const token = createToken(userStatus.rows[0].id);
-        res.cookie("jwt", token, {
-          maxAge: 1000 * 60 * 60 * 24 * 2,
-          httpOnly: true,
+        const token = createToken(loginStatus.rows[0].id);
+        res.status(200).json({
+          token,
+          message: "Logged In",
         });
-        res.status(200).json(userStatus.rows[0]);
       } else {
-        res.status(400).send("Incorrect password");
+        res.status(400).send({ message: "Incorrect Password." });
       }
     } else {
-      res.status(400).send("User does not exist.");
+      res.status(400).send({ message: "User does not exist" });
     }
   } catch (error) {
     console.log("error while logging in:", error);

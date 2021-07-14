@@ -18,8 +18,8 @@ const app = express();
 app.use(
   cors({
     origin: "http://localhost:3000",
-    // credentials: true,
-    // methods: ["GET", "POST"],
+
+    // methods: ["GET", "POST",PT],
   })
 );
 app.use(express.json());
