@@ -1,3 +1,4 @@
+require("dotenv").config();
 const {
   getAllIncome,
   addIncomeEntry,
@@ -11,10 +12,38 @@ const {
   registerNewUser,
   loginUser,
 } = require("./queries");
+
 const express = require("express");
 const cors = require("cors");
 const { verifyToken } = require("./utils/tokens");
 const app = express();
+
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
+
+passport.use(
+  new LocalStrategy(function (username, password, done) {
+    User.findOne({ username: username }, function (err, user) {
+      if (err) {
+        return done(err);
+      }
+      if (!user) {
+        return done(null, false, { message: "Incorrect username." });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: "Incorrect password." });
+      }
+      return done(null, user);
+    });
+  })
+);
+
+const requestTime = (req, res, next) => {
+  let start = new Date().getTime();
+  next();
+  let end = new Date().getTime();
+  console.log(`${req.method} ${req.path} ${end - start} ms.`);
+};
 
 app.use(
   cors({
@@ -28,13 +57,6 @@ app.use(express.urlencoded({ extended: true }));
 
 const hostname = "127.0.0.1";
 const port = 5000;
-
-const requestTime = (req, res, next) => {
-  let start = new Date().getTime();
-  next();
-  let end = new Date().getTime();
-  console.log(`${req.method} ${req.path} ${end - start} ms.`);
-};
 
 app.use(requestTime);
 

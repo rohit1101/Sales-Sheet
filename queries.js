@@ -14,6 +14,7 @@ const pool = new Pool({
   port: "5432",
 });
 
+
 exports.registerNewUser = async (req, res) => {
   const { username, password } = req.body;
   const { hashedPassword } = await encryptPassword(password);
