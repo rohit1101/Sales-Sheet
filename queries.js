@@ -11,6 +11,44 @@ const pool = new Pool({
   port: "5432",
 });
 
+exports.registerNewUser = (req, res) => {
+  const { username, password } = req.body;
+  return pool
+    .query(`insert into users(username,password) values($1,$2) returning *`, [
+      username,
+      password,
+    ])
+    .then((result) => {
+      res.send(result.rows[0]);
+    })
+    .catch((e) => console.log("error: username already exists", e));
+};
+
+exports.loginUser = (req, res) => {
+  const username = "msd";
+  return pool
+    .query(`select * from users where username=$1;`, [username])
+    .then((result) => {
+      if (result.rows.length > 0) {
+        console.log(result.rows);
+        return done(null, result.rows[0].username);
+      }
+    })
+    .catch((e) => console.log("error while logging in:", e));
+  // User.findOne({ username: username }, function (err, user) {
+  //   if (err) {
+  //     return done(err);
+  //   }
+  //   if (!user) {
+  //     return done(null, false, { message: "Incorrect username." });
+  //   }
+  //   if (!user.validPassword(password)) {
+  //     return done(null, false, { message: "Incorrect password." });
+  //   }
+  //   return done(null, user);
+  // });
+};
+
 exports.getAllIncome = (req, res) => {
   const { card_id, date } = req.query;
 
@@ -71,7 +109,6 @@ exports.updateIncomeEntry = async (req, res) => {
   const { id } = req.params;
   const { date, amount_paid, card_id } = req.body;
   let dbArgs = Object.keys(req.body);
-
   let dbVals = [];
   let query = "";
 
@@ -93,9 +130,10 @@ exports.updateIncomeEntry = async (req, res) => {
     return res.status(400).send("Invalid ID");
   }
 
-  const doesIdExists = await pool
-    .query("SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)", [parseInt(id)])
-    .then((result) => result.rows[0].exists);
+  const doesIdExists = await pool.query(
+    "SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)",
+    [parseInt(id)]
+  );
 
   doesIdExists
     ? pool
@@ -112,9 +150,10 @@ exports.deleteIncomeEntry = async (req, res) => {
     return res.status(400).send("Invalid ID");
   }
 
-  const doesIdExists = await pool
-    .query("SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)", [parseInt(id)])
-    .then((result) => result.rows[0].exists);
+  const doesIdExists = await pool.query(
+    "SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)",
+    [parseInt(id)]
+  );
 
   doesIdExists
     ? pool
@@ -181,11 +220,10 @@ exports.updateExpenseEntry = async (req, res) => {
     return res.status(400).send("Invalid ID");
   }
 
-  const doesIdExists = await pool
-    .query("SELECT EXISTS(SELECT 1 FROM expenses WHERE id = $1)", [
-      parseInt(id),
-    ])
-    .then((result) => result.rows[0].exists);
+  const doesIdExists = await pool.query(
+    "SELECT EXISTS(SELECT 1 FROM expenses WHERE id = $1)",
+    [parseInt(id)]
+  );
 
   if (doesIdExists) {
     return pool
@@ -204,11 +242,10 @@ exports.deleteExpenseEntry = async (req, res) => {
     return res.status(400).send("Invalid ID");
   }
 
-  const doesIdExists = await pool
-    .query("SELECT EXISTS(SELECT 1 FROM expenses WHERE id = $1)", [
-      parseInt(id),
-    ])
-    .then((result) => result.rows[0].exists);
+  const doesIdExists = await pool.query(
+    "SELECT EXISTS(SELECT 1 FROM expenses WHERE id = $1)",
+    [parseInt(id)]
+  );
 
   doesIdExists
     ? pool
