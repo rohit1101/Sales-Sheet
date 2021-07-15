@@ -15,6 +15,7 @@ const {
 
 const express = require("express");
 const cors = require("cors");
+const { verifyToken } = require("./utils/tokens");
 const app = express();
 
 const passport = require("passport");
@@ -47,7 +48,8 @@ const requestTime = (req, res, next) => {
 app.use(
   cors({
     origin: "http://localhost:3000",
-    // methods: ["GET", "POST"],
+
+    // methods: ["GET", "POST",PT],
   })
 );
 app.use(express.json());
@@ -59,15 +61,27 @@ const port = 5000;
 app.use(requestTime);
 
 app.route("/register").post(registerNewUser);
-app.route("/login").get(loginUser);
+app.route("/login").post(loginUser);
 
-app.route("/income").get(getAllIncome).post(addIncomeEntry);
-app.route("/income/:id").put(updateIncomeEntry).delete(deleteIncomeEntry);
+app
+  .route("/income")
+  .get(verifyToken, getAllIncome)
+  .post(verifyToken, addIncomeEntry);
+app
+  .route("/income/:id")
+  .put(verifyToken, updateIncomeEntry)
+  .delete(verifyToken, deleteIncomeEntry);
 
-app.route("/expense").get(getAllExpenses).post(addExpenseEntry);
-app.route("/expenses/:id").put(updateExpenseEntry).delete(deleteExpenseEntry);
+app
+  .route("/expense")
+  .get(verifyToken, getAllExpenses)
+  .post(verifyToken, addExpenseEntry);
+app
+  .route("/expenses/:id")
+  .put(verifyToken, updateExpenseEntry)
+  .delete(verifyToken, deleteExpenseEntry);
 
-app.get("/filter", filterSales);
+app.get("/filter", verifyToken, filterSales);
 
 app.listen(port, () => {
   console.log(`server running on http://${hostname}:${port}`);

@@ -1,5 +1,8 @@
 const pg = require("pg");
+const jwt = require("jsonwebtoken");
 const { URL, URLSearchParams } = require("url");
+const { encryptPassword, decryptPassword } = require("./utils/hash");
+const { createToken } = require("./utils/tokens");
 
 const { Pool } = pg;
 
@@ -11,42 +14,61 @@ const pool = new Pool({
   port: "5432",
 });
 
-exports.registerNewUser = (req, res) => {
+
+exports.registerNewUser = async (req, res) => {
   const { username, password } = req.body;
-  return pool
-    .query(`insert into users(username,password) values($1,$2) returning *`, [
-      username,
-      password,
-    ])
-    .then((result) => {
-      res.send(result.rows[0]);
-    })
-    .catch((e) => console.log("error: username already exists", e));
+  const { hashedPassword } = await encryptPassword(password);
+
+  try {
+    const userStatus = await pool.query(
+      `insert into users(username,password) values($1,$2) returning *`,
+      [username, hashedPassword]
+    );
+    const token = createToken(userStatus.rows[0].id);
+    res.status(200).json({
+      token,
+      message: "Registered and Logged In",
+    });
+  } catch (error) {
+    console.log("error:", error.detail);
+    res.status(403).send(error.detail);
+  }
 };
 
-exports.loginUser = (req, res) => {
-  const username = "msd";
-  return pool
-    .query(`select * from users where username=$1;`, [username])
-    .then((result) => {
-      if (result.rows.length > 0) {
-        console.log(result.rows);
-        return done(null, result.rows[0].username);
+exports.loginUser = async (req, res) => {
+  let { username, password } = req.body;
+
+  try {
+    // To check if the username exists in the DB.
+    const loginStatus = await pool.query(
+      `SELECT EXISTS(SELECT 1 FROM users WHERE username = $1)`,
+      [username]
+    );
+
+    if (loginStatus.rows[0].exists) {
+      const user = await pool.query(`select * from users where username=$1`, [
+        username,
+      ]);
+      const passwordCheck = await decryptPassword(
+        password,
+        user.rows[0].password
+      );
+      if (passwordCheck) {
+        const token = createToken(user.rows[0]);
+        res.status(200).json({
+          token,
+          message: "Logged In",
+        });
+      } else {
+        res.status(400).send({ message: "Incorrect Password." });
       }
-    })
-    .catch((e) => console.log("error while logging in:", e));
-  // User.findOne({ username: username }, function (err, user) {
-  //   if (err) {
-  //     return done(err);
-  //   }
-  //   if (!user) {
-  //     return done(null, false, { message: "Incorrect username." });
-  //   }
-  //   if (!user.validPassword(password)) {
-  //     return done(null, false, { message: "Incorrect password." });
-  //   }
-  //   return done(null, user);
-  // });
+    } else {
+      res.status(400).send({ message: "User does not exist" });
+    }
+  } catch (error) {
+    console.log("error while logging in:", error);
+    res.status(404).send(error);
+  }
 };
 
 exports.getAllIncome = (req, res) => {
