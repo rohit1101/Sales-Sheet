@@ -1,5 +1,5 @@
-## GET plaintext
-http://127.0.0.1:80/
+### GET plaintext
+http://127.0.0.1:3000/plaintext
 
 ### GET JSON response
 http://127.0.0.1:3000/jsonresponse
@@ -14,4 +14,22 @@ content-type: application/json
 {
     "name": "JSON From frontend",
     "time": "Jan 11 1999"
+}
+
+// Express JS routes
+
+### get all sales by all users (optional query params)
+http://127.0.0.1:3000/sales
+
+### create a new sales entry
+http://127.0.0.1:3000/sales?id=00fdxb21e&date=2021-05-20
+
+
+## put request 
+
+PUT http://127.0.0.1:3000/sale/9 HTTP/1.1
+content-type: application/json
+
+{
+    "card_id":"1"
 }
