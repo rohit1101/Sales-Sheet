@@ -11,6 +11,8 @@ const {
   deleteExpenseEntry,
   registerNewUser,
   loginUser,
+  getIncomeById,
+  getExpenseById,
 } = require("./queries");
 
 const express = require("express");
@@ -42,6 +44,9 @@ app.use(requestTime);
 
 app.route("/register").post(registerNewUser);
 app.route("/login").post(loginUser);
+
+app.get("/incomes/income/:id", getIncomeById);
+app.get("/expenses/expense/:id", getExpenseById);
 
 app
   .route("/income")

@@ -14,7 +14,6 @@ const pool = new Pool({
   port: "5432",
 });
 
-
 exports.registerNewUser = async (req, res) => {
   const { username, password } = req.body;
   const { hashedPassword } = await encryptPassword(password);
@@ -69,6 +68,46 @@ exports.loginUser = async (req, res) => {
     console.log("error while logging in:", error);
     res.status(404).send(error);
   }
+};
+
+exports.getIncomeById = async (req, res) => {
+  const { id } = req.params;
+
+  if (isNaN(id)) {
+    return res.status(400).send("Invalid ID");
+  }
+
+  const doesIdExists = await pool.query(
+    "SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)",
+    [parseInt(id)]
+  );
+
+  doesIdExists.rows[0].exists
+    ? pool
+        .query(`Select * from sales where id=$1;`, [parseInt(id)])
+        .then((results) => res.status(200).send(results.rows[0]))
+        .catch((e) => console.log("Error getIncomeById request =>", e))
+    : res.status(400).send("ID does not exist");
+};
+
+exports.getExpenseById = async (req, res) => {
+  const { id } = req.params;
+
+  if (isNaN(id)) {
+    return res.status(400).send("Invalid ID");
+  }
+
+  const doesIdExists = await pool.query(
+    "SELECT EXISTS(SELECT 1 FROM expenses WHERE id = $1)",
+    [parseInt(id)]
+  );
+
+  doesIdExists.rows[0].exists
+    ? pool
+        .query(`Select * from expenses where id=$1;`, [parseInt(id)])
+        .then((results) => res.status(200).send(results.rows[0]))
+        .catch((e) => console.log("Error getExpenseById request =>", e))
+    : res.status(400).send("ID does not exist");
 };
 
 exports.getAllIncome = (req, res) => {
