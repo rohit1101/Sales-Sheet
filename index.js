@@ -11,32 +11,14 @@ const {
   deleteExpenseEntry,
   registerNewUser,
   loginUser,
+  getIncomeById,
+  getExpenseById,
 } = require("./queries");
 
 const express = require("express");
 const cors = require("cors");
 const { verifyToken } = require("./utils/tokens");
 const app = express();
-
-const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
-
-passport.use(
-  new LocalStrategy(function (username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) {
-        return done(err);
-      }
-      if (!user) {
-        return done(null, false, { message: "Incorrect username." });
-      }
-      if (!user.validPassword(password)) {
-        return done(null, false, { message: "Incorrect password." });
-      }
-      return done(null, user);
-    });
-  })
-);
 
 const requestTime = (req, res, next) => {
   let start = new Date().getTime();
@@ -62,6 +44,9 @@ app.use(requestTime);
 
 app.route("/register").post(registerNewUser);
 app.route("/login").post(loginUser);
+
+app.get("/incomes/income/:id", getIncomeById);
+app.get("/expenses/expense/:id", getExpenseById);
 
 app
   .route("/income")
