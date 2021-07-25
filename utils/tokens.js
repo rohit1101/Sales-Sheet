@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 exports.createToken = (id) => {
-  return jwt.sign({ id }, "loki- god of mischief", { expiresIn: "1h" });
+  return jwt.sign({ id }, "loki- god of mischief", { expiresIn: "365 days" });
 };
 
 exports.verifyToken = (req, res, next) => {
