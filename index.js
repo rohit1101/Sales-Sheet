@@ -45,8 +45,8 @@ app.use(requestTime);
 app.route("/register").post(registerNewUser);
 app.route("/login").post(loginUser);
 
-app.get("/incomes/income/:id", getIncomeById);
-app.get("/expenses/expense/:id", getExpenseById);
+app.get("/incomes/income/:id", verifyToken, getIncomeById);
+app.get("/expenses/expense/:id", verifyToken, getExpenseById);
 
 app
   .route("/income")
