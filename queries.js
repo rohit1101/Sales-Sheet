@@ -169,26 +169,10 @@ exports.addIncomeEntry = (req, res) => {
 exports.updateIncomeEntry = async (req, res) => {
   const { id } = req.params;
   const { date, amount_paid, card_id } = req.body;
-  let dbArgs = Object.keys(req.body);
-  let dbVals = [];
-  let query = "";
-
-  amount_paid && dbVals.push(+amount_paid);
-  date && dbVals.push(date);
-  card_id && dbVals.push(+card_id);
-
-  if (dbArgs.length === 1) {
-    query = `update sales set ${dbArgs[0]}=$1  where id=${id};`;
-  } else {
-    const updateStr = [...dbArgs]
-      .map((item, index) => item + `=$${index + 1}`)
-      .join(",");
-
-    query = `update sales set ${updateStr} where id=${id};`;
-  }
+  
 
   if (isNaN(id)) {
-    return res.status(400).send("Invalid ID");
+    return reps.status(400).send("Invalid ID");
   }
 
   const doesIdExists = await pool.query(
@@ -196,9 +180,9 @@ exports.updateIncomeEntry = async (req, res) => {
     [parseInt(id)]
   );
 
-  doesIdExists
+  doesIdExists === 't'
     ? pool
-        .query(query, dbVals)
+        .query('update sales set card_id=$1,date=$2,amount_paid=$3 where id=$4;',[+card_id,date,+amount_paid,+id])
         .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
         .catch((e) => console.log("Error PUT request =>", e))
     : res.status(400).send("ID does not exist");
