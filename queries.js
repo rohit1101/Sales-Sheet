@@ -178,12 +178,12 @@ exports.updateIncomeEntry = async (req, res) => {
     "SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)",
     [parseInt(id)]
   );
-
-  doesIdExists === "t"
+  console.log(doesIdExists.rows[0].exists);
+  Boolean(doesIdExists.rows[0].exists)
     ? pool
         .query(
           "update sales set card_id=$1,date=$2,amount_paid=$3 where id=$4;",
-          [+card_id, date, +amount_paid, +id]
+          [+card_id, date, +amount_paid, parseInt(id)]
         )
         .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
         .catch((e) => console.log("Error PUT request =>", e))
@@ -250,15 +250,15 @@ exports.updateExpenseEntry = async (req, res) => {
   }
 
   const doesIdExists = await pool.query(
-    "SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)",
+    "SELECT EXISTS(SELECT 1 FROM expenses WHERE id = $1)",
     [parseInt(id)]
   );
 
-  doesIdExists === "t"
+  Boolean(doesIdExists.rows[0].exists)
     ? pool
         .query(
           "update expenses set date=$1,amount_paid=$2,description=$3 where id=$4;",
-          [date, +amount_paid, description, +id]
+          [date, parseInt(amount_paid), description, parseInt(id)]
         )
         .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
         .catch((e) => console.log("Error PUT request =>", e))
