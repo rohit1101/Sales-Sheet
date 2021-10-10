@@ -169,10 +169,9 @@ exports.addIncomeEntry = (req, res) => {
 exports.updateIncomeEntry = async (req, res) => {
   const { id } = req.params;
   const { date, amount_paid, card_id } = req.body;
-  
 
   if (isNaN(id)) {
-    return reps.status(400).send("Invalid ID");
+    return res.status(400).send("Invalid ID");
   }
 
   const doesIdExists = await pool.query(
@@ -180,9 +179,12 @@ exports.updateIncomeEntry = async (req, res) => {
     [parseInt(id)]
   );
 
-  doesIdExists === 't'
+  doesIdExists === "t"
     ? pool
-        .query('update sales set card_id=$1,date=$2,amount_paid=$3 where id=$4;',[+card_id,date,+amount_paid,+id])
+        .query(
+          "update sales set card_id=$1,date=$2,amount_paid=$3 where id=$4;",
+          [+card_id, date, +amount_paid, +id]
+        )
         .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
         .catch((e) => console.log("Error PUT request =>", e))
     : res.status(400).send("ID does not exist");
