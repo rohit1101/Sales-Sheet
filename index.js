@@ -54,9 +54,8 @@ app
   .post(verifyToken, addIncomeEntry);
 app
   .route("/income/:id")
-  .put(updateIncomeEntry)
+  .put(verifyToken, updateIncomeEntry)
   .delete(verifyToken, deleteIncomeEntry);
-
 
 app
   .route("/expense")
