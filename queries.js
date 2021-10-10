@@ -179,12 +179,11 @@ exports.updateIncomeEntry = async (req, res) => {
     [parseInt(id)]
   );
 
-  doesIdExists === "t"
+  Boolean(doesIdExists.rows[0].exists)
     ? pool
         .query(
           "update sales set card_id=$1,date=$2,amount_paid=$3 where id=$4;",
-          [+card_id, date, +amount_paid, +id]
-        )
+          [parseInt(card_id), date, parseInt(amount_paid), parseInt(id)])
         .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
         .catch((e) => console.log("Error PUT request =>", e))
     : res.status(400).send("ID does not exist");
@@ -244,24 +243,6 @@ exports.addExpenseEntry = (req, res) => {
 exports.updateExpenseEntry = async (req, res) => {
   const { id } = req.params;
   const { date, amount_paid, description } = req.body;
-  let dbArgs = Object.keys(req.body);
-
-  let dbVals = [];
-  let query = "";
-
-  amount_paid && dbVals.push(+amount_paid);
-  date && dbVals.push(date);
-  description && dbVals.push(description);
-
-  if (dbArgs.length === 1) {
-    query = `update expenses set ${dbArgs[0]}=$1  where id=${id};`;
-  } else {
-    const updateStr = [...dbArgs]
-      .map((item, index) => item + `=$${index + 1}`)
-      .join(",");
-    console.log(updateStr);
-    query = `update expenses set ${updateStr} where id=${id};`;
-  }
 
   if (isNaN(id)) {
     return res.status(400).send("Invalid ID");
@@ -272,14 +253,15 @@ exports.updateExpenseEntry = async (req, res) => {
     [parseInt(id)]
   );
 
-  if (doesIdExists) {
-    return pool
-      .query(query, dbVals)
-      .then(() => res.status(200).send(`Expenses Entry modified with id:${id}`))
-      .catch((e) => console.log("Error PUT request =>", e));
-  } else {
-    return res.status(400).send("ID does not exist");
-  }
+  Boolean(doesIdExists.rows[0].exists)
+    ? pool
+        .query(
+          "update expenses set date=$1,amount_paid=$2,description=$3 where id=$4;",
+          [date, parseInt(amount_paid), description, parseInt(id)]
+        )
+        .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
+        .catch((e) => console.log("Error PUT request =>", e))
+    : res.status(400).send("ID does not exist");
 };
 
 exports.deleteExpenseEntry = async (req, res) => {
