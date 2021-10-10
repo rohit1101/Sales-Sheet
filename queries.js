@@ -178,13 +178,12 @@ exports.updateIncomeEntry = async (req, res) => {
     "SELECT EXISTS(SELECT 1 FROM sales WHERE id = $1)",
     [parseInt(id)]
   );
-  console.log(doesIdExists.rows[0].exists);
+
   Boolean(doesIdExists.rows[0].exists)
     ? pool
         .query(
           "update sales set card_id=$1,date=$2,amount_paid=$3 where id=$4;",
-          [+card_id, date, +amount_paid, parseInt(id)]
-        )
+          [parseInt(card_id), date, parseInt(amount_paid), parseInt(id)])
         .then(() => res.status(200).send(`Sales Entry modified with id:${id}`))
         .catch((e) => console.log("Error PUT request =>", e))
     : res.status(400).send("ID does not exist");
